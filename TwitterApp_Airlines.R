@@ -1,3 +1,7 @@
+# ^\s*# TODO:
+
+# TODO: Figure out why this is not synchronizing
+
 ################################################################################
 #
 #                     Prepare the R environment
