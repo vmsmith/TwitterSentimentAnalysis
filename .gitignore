@@ -1,0 +1,14 @@
+.httr-oauth
+.Rproj.user
+.RData
+.Rhistory
+
+1_Twitter.Rproj
+
+/0_References
+/1_Data
+
+*.pptx
+*.docx
+*.txt
+*.csv
