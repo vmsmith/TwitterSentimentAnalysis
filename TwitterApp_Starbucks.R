@@ -1,4 +1,3 @@
-
 # ^\s*# TODO:
 
 # Prepare the R environment -----------------------------------------------
@@ -20,6 +19,7 @@ install.packages("stringr")
 library(bit)
 library(bit64)
 library(devtools)
+library(foreign)
 library(ggplot2)
 library(httr)
 library(rjson)
@@ -48,10 +48,14 @@ Starbucks_tweets <- searchTwitter("Starbucks", n = 1000, lang = "en")
 
 tweets_df <- twListToDF(Starbucks_tweets)
 
-write.table(tweets_df, "./Tweets_Starbucks_1000.csv", sep = ",", row.names = FALSE)
+tweets_df2 <- tweets_df[ , c(1, 5, 8, 11)]
 
-# read.table("                           ", header = TRUE, sep = ",")
+names(tweets_df2)
 
+write.dbf(tweets_df2, "./1_Data/Tweets_Starbucks_1000.dbf", factor2char = TRUE, max_nchar = 254)
+
+# TODO: Figure out why the .csv file does not read properly
+# tweets_df <- read.table("./1_Data/Tweets_Starbucks_1000.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE )
 
 # Examine the tweets ------------------------------------------------------
 
@@ -79,6 +83,10 @@ tweets_text
 # TODO: Remove duplicates
 
 # TODO: Account for NAs
+
+# TODO: Test retweet removal function
+# Remove retweet entities from the stored tweets (text)
+# bjp_txt = gsub(“(RT|via)((?:\\b\\W*@\\w+)+)”, “”, bjp_txt)
 
 # Convert encoding of emoticons
 # See: https://stackoverflow.com/questions/9637278/r-tm-package-invalid-input-in-utf8towcs
