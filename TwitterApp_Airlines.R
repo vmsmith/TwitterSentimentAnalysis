@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 # ^\s*# TODO:
 
 # TODO: Figure out why this is not synchronizing
@@ -9,7 +7,6 @@
 #                     Prepare the R environment
 #
 ################################################################################
->>>>>>> 6addcfd6edbfb130ba20e760ab6a864b28025622
 
 # ^\s*# TODO:
 
