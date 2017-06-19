@@ -1,3 +1,5 @@
+<<<<<<< HEAD
+=======
 # ^\s*# TODO:
 
 # TODO: Figure out why this is not synchronizing
@@ -7,57 +9,34 @@
 #                     Prepare the R environment
 #
 ################################################################################
+>>>>>>> 6addcfd6edbfb130ba20e760ab6a864b28025622
 
+# ^\s*# TODO:
 
-install.packages("twitteR") # should also install bit, bit64, rjson
-install.packages("httr")
-install.packages("devtools")
-install.packages("tm")
-install.packages("stringr")
+# Prepare the R environment -----------------------------------------------
+
+rm(list = ls())
+
+#install.packages("twitteR") # should also install bit, bit64, rjson
+#install.packages("httr")
+#install.packages("devtools")
+#install.packages("tm")
+#install.packages("stringr")
 
 
 library(bit)
 library(bit64)
 library(devtools)
+library(foreign)
+library(ggplot2)
 library(httr)
 library(rjson)
 library(stringr)
 library(tm)
 library(twitteR)
 
-################################################################################
-#
-#                        Import Sentiment Files
-#
-################################################################################
 
-posText <- read.delim("./words-positive.txt", header = FALSE, stringsAsFactors = FALSE)
-typeof(posText)
-
-posText <- unlist(lapply(posText, function(x) { str_split(x, "\n") }))
-typeof(posText)
-length(posText)
-
-
-negText <- read.delim("./words-negative.txt", header = FALSE, stringsAsFactors = FALSE)
-typeof(negText)
-
-negText <- unlist(lapply(negText, function(x) { str_split(x, "\n") }))
-typeof(negText)
-length(negText)
-
-
-pos.words = c(posText, 'upgrade')
-
-neg.words = c(negText, 'wtf', 'wait', 'waiting','epicfail', 'mechanical')
-
-
-
-################################################################################
-#
-#               Connect with Twitter and text the connection
-#
-################################################################################
+# Connect with Twitter and test the connection ----------------------------
 
 api_key <- "aep7QPBd7NJ1m1ZSsodG5LBC4"
 
@@ -69,22 +48,130 @@ access_token_secret <- "OfTEGVMcqbGvWpudCqdQE2r6g8zSapqh0PhpbuieKqHB3"
 
 setup_twitter_oauth(api_key,api_secret, access_token, access_token_secret)
 
-delta_tweets = searchTwitter('@delta', n = 500, lang = "en")
-jetblue_tweets = searchTwitter('@jetblue', n = 500, lang = "en")
-united_tweets = searchTwitter('@united', n = 500, lang = "en")
+searchTwitter("iphone", n = 10)
 
-delta_txt = sapply(delta_tweets, function(t) t$getText() )
-jetblue_txt = sapply(jetblue_tweets, function(t) t$getText() )
-united_txt = sapply(united_tweets, function(t) t$getText() )
 
-noof_tweets = c(length(delta_txt), length(jetblue_txt),length(united_txt))
-noof_tweets
+# Capture and package United tweets -----------------------------------------
 
-airline <- c(delta_txt,jetblue_txt,united_txt)
-airline
+airline_tweets <- read.dbf("./1_Data/tweets.dbf", as.is = TRUE)
 
 
 
+# Examine the tweets ------------------------------------------------------
+
+# Size of data frame
+dim(airline_tweets)
+
+# Column names
+names(airline_tweets)
+
+# 1st tweet
+airline_tweets[1, ]
+
+# Text of 1st tweet
+airline_tweets[1, 5]
+
+airline_tweets[1:3, 5]
 
 
+# Process the text --------------------------------------------------------
 
+# Isolate text
+tweets_text <- tweets_df[ , 1]
+tweets_text
+
+# TODO: Remove duplicates
+
+# TODO: Account for NAs
+
+# TODO: Test retweet removal function
+# Remove retweet entities from the stored tweets (text)
+# bjp_txt = gsub(“(RT|via)((?:\\b\\W*@\\w+)+)”, “”, bjp_txt)
+
+
+# Convert encoding of emoticons
+# See: https://stackoverflow.com/questions/9637278/r-tm-package-invalid-input-in-utf8towcs
+tweets_text <- iconv(tweets_text, to = "UTF-8-MAC", sub = "byte")
+
+# Remove bad encoding
+tweets_text <- gsub("\\x[^**]", "", tweets_text)                # <- To Do
+
+# Remove URLs
+tweets_text <- gsub("http[^[:space:]]*", "", tweets_text)
+
+# Remove punctuation
+tweets_text = gsub("[[:punct:]]", "", tweets_text)
+
+# Remove control characters
+tweets_text = gsub("[[:cntrl:]]", "", tweets_text)
+
+# Remove digits
+tweets_text = gsub("[[:digit:]]+", "", tweets_text)
+
+# Remove other than English or space
+tweets_text <- gsub("[^[:alpha:][:space:]]*", "", tweets_text)
+
+
+# Convert to lower case
+tweets_text <- tolower(tweets_text)
+
+tweets_text
+
+word.list <- str_split(tweets_text, "\\s+")
+word.list
+words = unlist(word.list)
+# TODO: Compare list of words to vector of words
+words
+length(words)
+
+# Import and apply sentiments ---------------------------------------------
+
+# TODO: Look for more current sentiment files
+
+posText <- read.delim("./words-positive-2.txt", header = FALSE, stringsAsFactors = FALSE)
+typeof(posText)
+posText
+
+posText <- unlist(lapply(posText, function(x) { str_split(x, "\n") }))
+typeof(posText)
+length(posText)
+
+negText <- read.delim("./words-negative.txt", header = FALSE, stringsAsFactors = FALSE)
+typeof(negText)
+
+negText <- unlist(lapply(negText, function(x) { str_split(x, "\n") }))
+typeof(negText)
+length(negText)
+
+posText <- c(posText, 'upgrade')
+negText <- c(negText, 'wtf', 'wait', 'waiting','epicfail', 'mechanical')
+
+posMatches <- match(words, posText)
+posMatches <- !is.na(posMatches)
+posSentiments <- length(which(posMatches))
+
+negMatches <- match(words, negText)
+negMatches <- !is.na(negMatches)
+negSentiments <- length(which(negMatches))
+
+sentiment <- length(which(posMatches)) - length(which(negMatches))
+sentiment
+
+
+# View the sentiments -----------------------------------------------------
+
+Sentiments <- c("Positive Sentiments" = posSentiments, "Negative Sentiments" = negSentiments)
+barplot(Sentiments, main = "Starbucks Tweets", ylab = "Sentiment Count")
+
+
+################################################################################
+#
+#                              Issues
+#
+################################################################################
+
+# 1. Sentiment list completeness, accuracy, and timeliness
+
+# 2. n-grams: e.g., "good" vs "not good"
+
+# 3. Duplicates will skew analysis
