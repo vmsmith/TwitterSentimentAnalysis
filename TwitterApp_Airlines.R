@@ -1,13 +1,5 @@
 # ^\s*# TODO:
 
-# TODO: Figure out why this is not synchronizing
-
-################################################################################
-#
-#                     Prepare the R environment
-#
-################################################################################
-
 # Prepare the R environment -----------------------------------------------
 
 rm(list = ls())
@@ -22,6 +14,7 @@ rm(list = ls())
 library(bit)
 library(bit64)
 library(devtools)
+library(dplyr)
 library(foreign)
 library(ggplot2)
 library(httr)
@@ -48,25 +41,26 @@ searchTwitter("iphone", n = 10)
 
 # Capture and package United tweets -----------------------------------------
 
-airline_tweets <- read.dbf("./1_Data/tweets.dbf", as.is = TRUE)
-
+airlines_tweets <- read.dbf("./1_Data/airlines.dbf", as.is = TRUE)
 
 
 # Examine the tweets ------------------------------------------------------
 
 # Size of data frame
-dim(airline_tweets)
+dim(airlines_tweets)
 
 # Column names
-names(airline_tweets)
+names(airlines_tweets)
 
 # 1st tweet
-airline_tweets[1, ]
+airlines_tweets[1, ]
 
 # Text of 1st tweet
-airline_tweets[1, 5]
+airlines_tweets[1, 5]
 
-airline_tweets[1:3, 5]
+# Random 20 tweets
+airlines_tweets[1:20, 5]
+
 
 
 # Process the text --------------------------------------------------------
