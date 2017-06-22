@@ -184,11 +184,11 @@ length(negText)
 posText <- c(posText, 'upgrade')
 negText <- c(negText, 'wtf', 'wait', 'waiting','epicfail', 'mechanical')
 
-posMatches <- match(words, posText)
+posMatches <- match(united_corpus_tokens, posText)
 posMatches <- !is.na(posMatches)
 posSentiments <- length(which(posMatches))
 
-negMatches <- match(words, negText)
+negMatches <- match(united_corpus_tokens, negText)
 negMatches <- !is.na(negMatches)
 negSentiments <- length(which(negMatches))
 
@@ -199,7 +199,7 @@ sentiment
 # View the sentiments -----------------------------------------------------
 
 Sentiments <- c("Positive Sentiments" = posSentiments, "Negative Sentiments" = negSentiments)
-barplot(Sentiments, main = "Starbucks Tweets", ylab = "Sentiment Count")
+barplot(Sentiments, main = "United Airlines Tweets", ylab = "Sentiment Count")
 
 
 ################################################################################
