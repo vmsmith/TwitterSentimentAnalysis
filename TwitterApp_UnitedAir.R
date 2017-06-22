@@ -107,6 +107,12 @@ united_corpus[[5]][1]
 united_corpus <- tm_map(united_corpus, content_transformer(remove_control_characters))
 united_corpus[[5]][1]
 
+united_corpus <- tm_map(united_corpus, content_transformer(change_dash_to_space))
+united_corpus[[5]][1]
+
+united_corpus <- tm_map(united_corpus, content_transformer(remove_miscellaneous))
+united_corpus[[5]][1]
+
 # Use tm transformations
 
 united_corpus <- tm_map(united_corpus, removeNumbers)
@@ -138,15 +144,22 @@ united_corpus[[5]][1]
 getTokenizers()
 
 united_corpus[[1]][1]
-scan_tokenizer(united_corpus)
+united_corpus_scan <- scan_tokenizer(united_corpus)
+united_corpus_scan[1:50]
 
 united_corpus[[1]][1]
-MC_tokenizer(united_corpus)
+united_corpus_mc <- MC_tokenizer(united_corpus)
+united_corpus_mc
 
 # Separate tweets into individual words
 tokenize_tweets <- function(x) str_split(x, "\\s+")
-united_corpus <- tm_map(united_corpus, tokenize_tweets)
-lapply(united_corpus, `[`, )
+united_corpus_t <- tm_map(united_corpus, tokenize_tweets)
+united_corpus_t[[1]][1]
+united_corpus_tokens <- unname(unlist(united_corpus_t))
+
+length(united_corpus_scan)
+length(united_corpus_mc)
+length(united_corpus_tokens)
 
 
 # Import and apply sentiments ---------------------------------------------
