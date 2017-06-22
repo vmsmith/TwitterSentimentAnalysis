@@ -61,6 +61,9 @@ united_tweets[1, 5]
 # Text of first 20 tweets
 united_tweets[1:20, 5]
 
+united_tweets <- united_tweets[1:100, ]
+dim(united_tweets)
+
 # Create corpus
 united_corpus <- Corpus(VectorSource(united_tweets[ , 5]))
 united_corpus
@@ -80,19 +83,42 @@ getTransformations()
 remove_emoticons <- function(x) iconv(x, to = "UTF-8-MAC", sub = "byte")
 
 remove_bad_encoding <- function(x) gsub("\\x[^**]", "", x)
-  
+
 remove_URLs <- function(x) gsub("http[^[:space:]]*", "", x)
 
 remove_control_characters <- function(x) gsub("[[:cntrl:]]", "", x)
 
+change_dash_to_space <- function(x) chartr("-", " ", x)
+
+# Remove other than English or space
+remove_miscellaneous <- function(x) gsub("[^[:alpha:][:space:]]*", "", x)
+
+# Use custom transformations
+
 united_corpus <- tm_map(united_corpus, content_transformer(remove_emoticons))
+united_corpus[[5]][1]
 
 united_corpus <- tm_map(united_corpus, content_transformer(remove_bad_encoding))
+united_corpus[[5]][1]
 
 united_corpus <- tm_map(united_corpus, content_transformer(remove_URLs))
+united_corpus[[5]][1]
 
 united_corpus <- tm_map(united_corpus, content_transformer(remove_control_characters))
+united_corpus[[5]][1]
 
+# Use tm transformations
+
+united_corpus <- tm_map(united_corpus, removeNumbers)
+united_corpus[[5]][1]
+
+united_corpus <- tm_map(united_corpus, removePunctuation)
+united_corpus[[5]][1]
+
+united_corpus <- tm_map(united_corpus, stripWhitespace)
+united_corpus[[5]][1]
+
+united_corpus <- tm_map(united_corpus, tolower)
 united_corpus[[5]][1]
 
 
@@ -105,21 +131,23 @@ united_corpus[[5]][1]
 # bjp_txt = gsub(“(RT|via)((?:\\b\\W*@\\w+)+)”, “”, bjp_txt)
 
 
-# Remove other than English or space
-tweets_text <- gsub("[^[:alpha:][:space:]]*", "", tweets_text)
 
 
-# Convert to lower case
-tweets_text <- tolower(tweets_text)
+# Tokenize tweets ---------------------------------------------------------
 
-tweets_text
+getTokenizers()
 
-word.list <- str_split(tweets_text, "\\s+")
-word.list
-words = unlist(word.list)
-# TODO: Compare list of words to vector of words
-words
-length(words)
+united_corpus[[1]][1]
+scan_tokenizer(united_corpus)
+
+united_corpus[[1]][1]
+MC_tokenizer(united_corpus)
+
+# Separate tweets into individual words
+tokenize_tweets <- function(x) str_split(x, "\\s+")
+united_corpus <- tm_map(united_corpus, tokenize_tweets)
+lapply(united_corpus, `[`, )
+
 
 # Import and apply sentiments ---------------------------------------------
 
