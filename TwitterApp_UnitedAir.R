@@ -53,13 +53,18 @@ dim(united_tweets)
 names(united_tweets)
 
 # 1st tweet
-united_tweets[1, ]
+united_tweets[1, ] # 01 Jan 2015
+united_tweets[268337, ] # 31 Dec 2017
 
 # Text of 1st tweet
 united_tweets[1, 5]
 
 # Text of first 20 tweets
 united_tweets[1:20, 5]
+
+
+
+sample(united_tweets[ , 4], 100, replace = FALSE)
 
 united_tweets <- united_tweets[1:100, ]
 dim(united_tweets)
