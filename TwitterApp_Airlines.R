@@ -18,8 +18,10 @@ library(dplyr)
 library(foreign)
 library(ggplot2)
 library(httr)
+library(lubridate)
 library(rjson)
 library(stringr)
+library(syuzhet)
 library(tm)
 library(twitteR)
 
@@ -54,6 +56,9 @@ names(airlines_tweets)
 
 # 1st tweet
 airlines_tweets[1, ]
+
+# Last tweet
+airlines_tweets[268337, ]
 
 # Text of 1st tweet
 airlines_tweets[1, 5]
