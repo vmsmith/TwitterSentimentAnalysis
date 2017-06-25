@@ -143,6 +143,36 @@ united_passenger_dragged[1:20, 2]
 
 # Run initial sentiment functions from Syuzhet package
 
+sentimentSyuzhet <- get_sentiment(united_passenger_dragged$Text, method = "syuzhet")
+dim(united_passenger_dragged)
+length(sentimentSyuzhet)
+sentimentSyuzhet[1:5]
+
+sentimentBing <- get_sentiment(united_passenger_dragged$Text, method = "bing")
+length(sentimentBing)
+
+sentimentAFINN <- get_sentiment(united_passenger_dragged$Text, method = "afinn")
+length(sentimentAFINN)
+# TODO: Figure out AFINN error: "only defined on a data frame with all numeric variables"
+
+sentimentNRC <- get_sentiment(united_passenger_dragged$Text, method = "nrc")
+length(sentimentNRC)
+
+
+emotions <- get_nrc_sentiment(united_passenger_dragged$Text)
+dim(emotions)
+names(emotions)
+
+head(emotions)
+
+sentimentSyuzhet[1:5]
+sentimentBing[1:5]
+sentimentAFINN[1:5]
+sentimentNRC[1:5]
+
+united_passenger_dragged[4, 2]
+# Put in temporal order
+
 
 
 
