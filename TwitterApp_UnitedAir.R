@@ -41,6 +41,7 @@ searchTwitter("iphone", n = 10)
 
 # Capture and package United tweets -----------------------------------------
 
+# Load United tweets into a data frame
 united_tweets <- read.dbf("./1_Data/united.dbf", as.is = TRUE)
 
 
@@ -63,9 +64,10 @@ united_tweets[1, 5]
 united_tweets[1:20, 5]
 
 
-
+# Sample of dates
 sample(united_tweets[ , 4], 100, replace = FALSE)
 
+# Subset of 100 tweets
 united_tweets <- united_tweets[1:100, ]
 dim(united_tweets)
 
