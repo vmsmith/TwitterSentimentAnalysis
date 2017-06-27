@@ -160,36 +160,6 @@ united_passenger_dragged[ , 2] <- remove_emoticons(united_passenger_dragged[ , 2
 
 # Run initial sentiment functions from Syuzhet package --------------------
 
-sentimentSyuzhet <- get_sentiment(united_passenger_dragged$Text, method = "syuzhet")
-dim(united_passenger_dragged)
-length(sentimentSyuzhet)
-sentimentSyuzhet[1:5]
-
-sentimentBing <- get_sentiment(united_passenger_dragged$Text, method = "bing")
-length(sentimentBing)
-
-sentimentAFINN <- get_sentiment(united_passenger_dragged$Text, method = "afinn")
-length(sentimentAFINN)
-# TODO: Figure out AFINN error: "only defined on a data frame with all numeric variables"
-
-sentimentNRC <- get_sentiment(united_passenger_dragged$Text, method = "nrc")
-length(sentimentNRC)
-
-
-emotions <- get_nrc_sentiment(united_passenger_dragged$Text)
-dim(emotions)
-names(emotions)
-
-head(emotions)
-
-sentimentSyuzhet[1:5]
-sentimentBing[1:5]
-sentimentAFINN[1:5]
-sentimentNRC[1:5]
-
-united_passenger_dragged[4, 2]
-
-
 scoreSentiment = function(tab)
 {
   tab$syuzhet = get_sentiment(tab$Text, method = "syuzhet")
@@ -206,75 +176,53 @@ scoreSentiment = function(tab)
 # About 3 1/2 minutes on the Mac Pro
 tweets = scoreSentiment(united_passenger_dragged)
 names(tweets)
-tweets[1, ]
+ tweets[1, ]
 
 
 
-# Put in temporal order ---------------------------------------------------
+# Plot daily sentiments using the four different algorithms ---------------
 
-# function to find the week in which a date occurs
-round_weeks <- function(x)
-{
-  require(data.table)
-  dt = data.table(i = 1:length(x), day = x, weekday = weekdays(x))
-  print(dt)
-  offset = data.table(weekday = c('Sunday', 'Monday', 'Tuesday', 'Wednesday',
-                                  'Thursday', 'Friday', 'Saturday'),
-                      offset = -(0:6))
-  dt = merge(dt, offset, by = "weekday")
-  print(dt)
-  dt[ , day_adj := day + offset]
-  setkey(dt, i)
-  return(dt[ , day_adj])
-}
 
-# get daily summaries of the results
+
+ 
+ # Get daily summaries of the results - Syuzhet
+ daily = ddply(tweets, ~ TimeStamp, summarize, num_tweets = length(positive), ave_sentiment = mean(syuzhet),
+               ave_negative = mean(negative), ave_positive = mean(positive), ave_anger = mean(anger))
+ 
+ # Plot the daily sentiment
+ ggplot(daily, aes(x = TimeStamp, y = ave_sentiment)) + geom_line() +
+   ggtitle("United Airline Sentiment: Syuzhet") + xlab("Date") + ylab("Sentiment") + scale_x_date(date_labels = '%d-%b-%y')
+ 
+ 
+# Get daily summaries of the results - Bing
 daily = ddply(tweets, ~ TimeStamp, summarize, num_tweets = length(positive), ave_sentiment = mean(bing),
               ave_negative = mean(negative), ave_positive = mean(positive), ave_anger = mean(anger))
 
-# plot the daily sentiment
+# Plot the daily sentiment
 ggplot(daily, aes(x = TimeStamp, y = ave_sentiment)) + geom_line() +
-  ggtitle("Airline Sentiment") + xlab("Date") + ylab("Sentiment") + scale_x_date(date_labels = '%d-%b-%y')
-
-# get weekly summaries of the results
-weekly = ddply(tweets, ~ week, summarize, num_tweets = length(positive), ave_sentiment = mean(bing),
-               ave_negative = mean(negative), ave_positive = mean(positive), ave_anger = mean(anger))
-
-# plot the weekly sentiment
-ggplot(weekly, aes(x=week, y=ave_sentiment, colour=Airline)) + geom_line() +
-  ggtitle("Airline Sentiment") + xlab("Date") + ylab("Sentiment") + scale_x_date(date_labels = '%d-%b-%y')
+  ggtitle("United Airline Sentiment: Bing") + xlab("Date") + ylab("Sentiment") + scale_x_date(date_labels = '%d-%b-%y')
 
 
-# Tokenize tweets ---------------------------------------------------------
+# Get daily summaries of the results - AFINN
+daily = ddply(tweets, ~ TimeStamp, summarize, num_tweets = length(positive), ave_sentiment = mean(afinn),
+              ave_negative = mean(negative), ave_positive = mean(positive), ave_anger = mean(anger))
 
-getTokenizers()
-
-united_corpus[[1]][1]
-united_corpus_scan <- scan_tokenizer(united_corpus)
-united_corpus_scan[1:50]
-
-united_corpus[[1]][1]
-united_corpus_mc <- MC_tokenizer(united_corpus)
-united_corpus_mc
-
-# Separate tweets into individual words
-tokenize_tweets <- function(x) str_split(x, "\\s+")
-united_corpus_t <- tm_map(united_corpus, tokenize_tweets)
-united_corpus_t[[1]][1]
-united_corpus_tokens <- unname(unlist(united_corpus_t))
-
-length(united_corpus_scan)
-length(united_corpus_mc)
-length(united_corpus_tokens)
+# Plot the daily sentiment
+ggplot(daily, aes(x = TimeStamp, y = ave_sentiment)) + geom_line() +
+  ggtitle("United Airline Sentiment: AFINN") + xlab("Date") + ylab("Sentiment") + scale_x_date(date_labels = '%d-%b-%y')
 
 
-# Import and apply sentiments ---------------------------------------------
+# Get daily summaries of the results - NRC
+daily = ddply(tweets, ~ TimeStamp, summarize, num_tweets = length(positive), ave_sentiment = mean(nrc),
+              ave_negative = mean(negative), ave_positive = mean(positive), ave_anger = mean(anger))
+
+# Plot the daily sentiment
+ggplot(daily, aes(x = TimeStamp, y = ave_sentiment)) + geom_line() +
+  ggtitle("United Airline Sentiment: NRC") + xlab("Date") + ylab("Sentiment") + scale_x_date(date_labels = '%d-%b-%y')
 
 
-# View the sentiments -----------------------------------------------------
 
-Sentiments <- c("Positive Sentiments" = posSentiments, "Negative Sentiments" = negSentiments)
-barplot(Sentiments, main = "United Airlines Tweets", ylab = "Sentiment Count")
+
 
 
 ################################################################################
