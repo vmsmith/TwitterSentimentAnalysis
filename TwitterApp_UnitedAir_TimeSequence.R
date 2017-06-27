@@ -20,7 +20,6 @@ library(syuzhet)
 library(tm)
 library(twitteR)
 
-
 # Connect with Twitter and test the connection ----------------------------
 
 api_key <- "aep7QPBd7NJ1m1ZSsodG5LBC4"
@@ -172,8 +171,7 @@ scoreSentiment = function(tab)
   return(tab)
 }
 
-# get the sentiment scores for the tweets  
-# About 3 1/2 minutes on the Mac Pro
+# Get the sentiment scores for the tweets (about 3 1/2 minutes on the Mac Pro)
 tweets = scoreSentiment(united_passenger_dragged)
 names(tweets)
  tweets[1, ]
@@ -182,14 +180,46 @@ names(tweets)
 
 # Plot daily sentiments using the four different algorithms ---------------
 
-
-
  
- # Get daily summaries of the results - Syuzhet
+# Get daily summaries of the results - Syuzhet
+daily_syuzhet = ddply(tweets, ~ TimeStamp, summarize, ave_sentiment = mean(syuzhet))
+ 
+# Plot the daily sentiment - Syuzhet
+ggplot(daily_syuzhet, aes(x = TimeStamp, y = ave_sentiment)) + geom_line() +
+   ggtitle("United Airline Sentiment: Syuzhet") + xlab("Date") + ylab("Sentiment") + scale_x_date(date_labels = '%d-%b-%y')
+ 
+ 
+ 
+# Get daily summaries of the results - Bing
+daily_bing = ddply(tweets, ~ TimeStamp, summarize, ave_sentiment = mean(bing))
+
+# Plot the daily sentiment - Bing
+ggplot(daily_bing, aes(x = TimeStamp, y = ave_sentiment)) + geom_line() +
+  ggtitle("United Airline Sentiment: Bing") + xlab("Date") + ylab("Sentiment") + scale_x_date(date_labels = '%d-%b-%y')
+
+
+# Get daily summaries of the results - AFINN
+daily_afinn = ddply(tweets, ~ TimeStamp, summarize, ave_sentiment = mean(afinn))
+
+# Plot the daily sentiment - AFINN
+ggplot(daily_afinn, aes(x = TimeStamp, y = ave_sentiment)) + geom_line() +
+  ggtitle("United Airline Sentiment: AFINN") + xlab("Date") + ylab("Sentiment") + scale_x_date(date_labels = '%d-%b-%y')
+
+# Get daily summaries of the results - NRC
+daily_nrc = ddply(tweets, ~ TimeStamp, summarize, ave_sentiment = mean(nrc))
+
+# Plot the daily sentiment - NRC
+ggplot(daily_nrc, aes(x = TimeStamp, y = ave_sentiment)) + geom_line() +
+  ggtitle("United Airline Sentiment: NRC") + xlab("Date") + ylab("Sentiment") + scale_x_date(date_labels = '%d-%b-%y')
+
+
+# Delete eventually -------------------------------------------------------
+ 
+# Get daily summaries of the results - Syuzhet
  daily = ddply(tweets, ~ TimeStamp, summarize, num_tweets = length(positive), ave_sentiment = mean(syuzhet),
                ave_negative = mean(negative), ave_positive = mean(positive), ave_anger = mean(anger))
  
- # Plot the daily sentiment
+# Plot the daily sentiment
  ggplot(daily, aes(x = TimeStamp, y = ave_sentiment)) + geom_line() +
    ggtitle("United Airline Sentiment: Syuzhet") + xlab("Date") + ylab("Sentiment") + scale_x_date(date_labels = '%d-%b-%y')
  
