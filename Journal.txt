@@ -9,6 +9,7 @@
   TO DO
   
   Refine the various text cleaning functions
+  Switch from plyr function ddply() to equivalent dplyr functionality
   Clean up the overall code
   Create a narrative and incorporate into PPT
 
