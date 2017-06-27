@@ -4,13 +4,6 @@
 
 rm(list = ls())
 
-#install.packages("twitteR") # should also install bit, bit64, rjson
-#install.packages("httr")
-#install.packages("devtools")
-#install.packages("tm")
-#install.packages("stringr")
-
-
 library(bit)
 library(bit64)
 library(data.table)
@@ -20,6 +13,7 @@ library(foreign)
 library(ggplot2)
 library(httr)
 library(lubridate)
+library(plyr)
 library(rjson)
 library(stringr)
 library(syuzhet)
@@ -208,8 +202,10 @@ scoreSentiment = function(tab)
   return(tab)
 }
 
-# get the sentiment scores for the tweets
+# get the sentiment scores for the tweets  
+# About 3 1/2 minutes on the Mac Pro
 tweets = scoreSentiment(united_passenger_dragged)
+names(tweets)
 tweets[1, ]
 
 
@@ -221,25 +217,27 @@ round_weeks <- function(x)
 {
   require(data.table)
   dt = data.table(i = 1:length(x), day = x, weekday = weekdays(x))
+  print(dt)
   offset = data.table(weekday = c('Sunday', 'Monday', 'Tuesday', 'Wednesday',
                                   'Thursday', 'Friday', 'Saturday'),
                       offset = -(0:6))
   dt = merge(dt, offset, by = "weekday")
+  print(dt)
   dt[ , day_adj := day + offset]
   setkey(dt, i)
   return(dt[ , day_adj])
 }
 
 # get daily summaries of the results
-daily = ddply(tweets, ~ Airline + TimeStamp, summarize, num_tweets = length(positive), ave_sentiment = mean(bing),
+daily = ddply(tweets, ~ TimeStamp, summarize, num_tweets = length(positive), ave_sentiment = mean(bing),
               ave_negative = mean(negative), ave_positive = mean(positive), ave_anger = mean(anger))
 
 # plot the daily sentiment
-ggplot(daily, aes(x=TimeStamp, y = ave_sentiment, colour=Airline)) + geom_line() +
+ggplot(daily, aes(x = TimeStamp, y = ave_sentiment)) + geom_line() +
   ggtitle("Airline Sentiment") + xlab("Date") + ylab("Sentiment") + scale_x_date(date_labels = '%d-%b-%y')
 
 # get weekly summaries of the results
-weekly = ddply(tweets, ~ Airline + week, summarize, num_tweets = length(positive), ave_sentiment = mean(bing),
+weekly = ddply(tweets, ~ week, summarize, num_tweets = length(positive), ave_sentiment = mean(bing),
                ave_negative = mean(negative), ave_positive = mean(positive), ave_anger = mean(anger))
 
 # plot the weekly sentiment
