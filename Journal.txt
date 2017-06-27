@@ -1,2 +1,42 @@
+062717 - Tue
+
+  Accomplished
+  
+  Did a first run of the time series for United, and showed down and up spikes that match calendar events
+  Compared four sentiment analyses in a time series context
+  Determined 'round_weeks()' function was superfluous and deleted it
+  
+  TO DO
+  
+  Refine the various text cleaning functions
+  Clean up the overall code
+  Create a narrative and incorporate into PPT
+
+
+062617 - Mon
+
+  Accomplished
+  
+  Tweaked text cleaning functions
+  Incorporated Syuzhet sentiment functions per blog
+  Imported time series functions from blog
+  
+  TO DO
+  
+  Interpret the 'round_weeks()' function from the blog
+  Run the time series stuff
+
+062517 - Sun
+
+	Accomplished
+
+	Created new file to process United tweets during timeframe of dragging incident.
+	Removed tm package stuff and created individual text cleaning functions.
+	Tried Syuzhet package sentiment functions.
+
+	TO DO
+
+	Figure out why the sentiment package results are all over the place and unintuitive.
+	Construct the time series analysis.
 
 
