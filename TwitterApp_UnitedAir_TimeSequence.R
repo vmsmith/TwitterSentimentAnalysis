@@ -20,6 +20,8 @@ library(syuzhet)
 library(tm)
 library(twitteR)
 
+source("./cleaning_functions.R")
+
 # Connect with Twitter and test the connection ----------------------------
 
 api_key <- "aep7QPBd7NJ1m1ZSsodG5LBC4"
@@ -63,12 +65,12 @@ united_tweets[1:20, 5]
 united_tweets[1, 4]
 tail(united_tweets[ , 4], n = 1)
 
-# Extract TimeStamp and Text columns, and munge TimeStamp -----------------
+# Extract TimeStamp and Text columns, and change TimeStamp -----------------
 
 united_passenger_dragged <- select(united_tweets, c(4, 5))
 names(united_passenger_dragged)
 
-# TODO: Experiment with changing TimeStamp column with as.Date
+# Change TimeStamp to date
 united_passenger_dragged$TimeStamp <- as.Date(united_passenger_dragged$TimeStamp)
 
 # Extract Mar - May 2017 tweets
@@ -83,34 +85,22 @@ tail(united_passenger_dragged$TimeStamp, n = 1)
 
 dim(united_passenger_dragged)
 
-# Take a peek
-sample(united_passenger_dragged[ , 2], 50, replace = FALSE)
+# Execute text cleaning functions -----------------------------------------
 
-# Process the text --------------------------------------------------------
+# Option 1 - Individual functions one at a time
+united_passenger_dragged[1:20, 2]
 
-# Create transformation functions
+united_passenger_dragged[ , 2] <- remove_emoticons(united_passenger_dragged[ , 2])
+united_passenger_dragged[1:20, 2]
 
-remove_URLs <- function(x) gsub("http[^[:space:]]*", "", x)
-remove_punctuation <- function(x) gsub("[[:punct:]]", "", x)
-remove_digits <- function(x) gsub("[[:digit:]]+", "", x)
-remove_pictwittercom <- function(x) gsub("pictwittercom\\w+ *"  , "", x, ignore.case = TRUE)
-
-remove_emoticons <- function(x) iconv(x, to = "UTF-8-MAC", sub = "byte")
-remove_bad_encoding <- function(x) gsub("\\x[^**]", "", x)
-remove_control_characters <- function(x) gsub("[[:cntrl:]]", "", x)
-remove_at <- function(x) gsub()
-remove_hashtag <- function(x) gsub()
-remove_spaces <- function(x) gsub("[ \t]{2,}", "", x)
-change_dash_to_space <- function(x) chartr("-", " ", x)
-remove_miscellaneous <- function(x) gsub("[^[:alpha:][:space:]]*", "", x)
-#remove_spaces <- function(x) gsub("[^[:space:]]*", "", x)
-convert_to_lower <- function(x) tolower(x)
-
-# Option 1
+united_passenger_dragged[ , 2] <- remove_bad_encoding(united_passenger_dragged[ , 2])
 united_passenger_dragged[1:20, 2]
 
 united_passenger_dragged[ , 2] <- remove_URLs(united_passenger_dragged[ , 2])
 united_passenger_dragged[1:20, 2]
+
+united_passenger_dragged[ , 2] <- change_dash_to_space(united_passenger_dragged[ , 2])
+united_passenger_dragged[ , 2]
 
 united_passenger_dragged[ , 2] <- remove_punctuation(united_passenger_dragged[ , 2])
 united_passenger_dragged[1:20, 2]
@@ -118,42 +108,35 @@ united_passenger_dragged[1:20, 2]
 united_passenger_dragged[ , 2] <- remove_digits(united_passenger_dragged[ , 2])
 united_passenger_dragged[1:20, 2]
 
-united_passenger_dragged[ , 2] <- remove_pictwittercom(united_passenger_dragged[ , 2])
-united_passenger_dragged[1:20, 2]
-
-#united_passenger_dragged[ , 2] <- remove_spaces(united_passenger_dragged[ , 2])
-#united_passenger_dragged[1:20, 2]
-
-united_passenger_dragged[ , 2] <- remove_emoticons(united_passenger_dragged[ , 2])
-united_passenger_dragged[1:20, 2]
-
 united_passenger_dragged[ , 2] <- remove_control_characters(united_passenger_dragged[ , 2])
 united_passenger_dragged[1:20, 2]
 
-united_passenger_dragged[ , 2] <- remove_miscellaneous(united_passenger_dragged[ , 2])
+united_passenger_dragged[ , 2] <- collapse_spaces(united_passenger_dragged[ , 2])
+united_passenger_dragged[ , 2]
+
+united_passenger_dragged[ , 2] <- remove_pictwittercom(united_passenger_dragged[ , 2])
 united_passenger_dragged[1:20, 2]
 
 united_passenger_dragged[ , 2] <- tolower(united_passenger_dragged[ , 2])
 united_passenger_dragged[1:20, 2]
 
-
-# Option 2
+# Option 2 - With the pipe operator
 united_passenger_dragged[ , 2] <- remove_emoticons(united_passenger_dragged[ , 2]) %>%
+                                  remove_bad_encoding() %>%
                                   remove_URLs() %>%
-                                  remove_control_characters() %>%
+                                  change_dash_to_space() %>%
                                   remove_punctuation() %>%
                                   remove_digits() %>%
-                                  # remove_spaces() %>%
-                                  remove_miscellaneous() %>%
+                                  remove_control_characters() %>%
+                                  collapse_spaces() %>%
+                                  remove_pictwittercom() %>%
                                   tolower()
-
-
-
 # TODO: Remove duplicates
 
 # TODO: Account for NAs
 
 # TODO: Test retweet removal function
+
 # Remove retweet entities from the stored tweets (text)
 # bjp_txt = gsub(“(RT|via)((?:\\b\\W*@\\w+)+)”, “”, bjp_txt)
 
@@ -180,7 +163,6 @@ names(tweets)
 
 # Plot daily sentiments using the four different algorithms ---------------
 
- 
 # Get daily summaries of the results - Syuzhet
 daily_syuzhet = ddply(tweets, ~ TimeStamp, summarize, ave_sentiment = mean(syuzhet))
  
@@ -188,15 +170,12 @@ daily_syuzhet = ddply(tweets, ~ TimeStamp, summarize, ave_sentiment = mean(syuzh
 ggplot(daily_syuzhet, aes(x = TimeStamp, y = ave_sentiment)) + geom_line() +
    ggtitle("United Airline Sentiment: Syuzhet") + xlab("Date") + ylab("Sentiment") + scale_x_date(date_labels = '%d-%b-%y')
  
- 
- 
 # Get daily summaries of the results - Bing
 daily_bing = ddply(tweets, ~ TimeStamp, summarize, ave_sentiment = mean(bing))
 
 # Plot the daily sentiment - Bing
 ggplot(daily_bing, aes(x = TimeStamp, y = ave_sentiment)) + geom_line() +
   ggtitle("United Airline Sentiment: Bing") + xlab("Date") + ylab("Sentiment") + scale_x_date(date_labels = '%d-%b-%y')
-
 
 # Get daily summaries of the results - AFINN
 daily_afinn = ddply(tweets, ~ TimeStamp, summarize, ave_sentiment = mean(afinn))
