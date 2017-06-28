@@ -10,6 +10,7 @@
 
   Map each of the four sentiment analysis functions to what was going on with United
   Switch from plyr function ddply() to equivalent dplyr functionality
+  Get rid of blank space at the end of certain lines
 
 062717 - Tue
 
