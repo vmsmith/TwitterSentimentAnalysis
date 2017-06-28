@@ -1,3 +1,16 @@
+062817 - Wed
+
+  Accomplished
+  
+  Tested and refined text cleaning functions in separate file (regex_expressions.R)
+  Created separate source file for text cleaning functions (cleaning_functions.R)
+  Cleaned up code in TwitterApp_UnitedAir_TimeSequence.R
+  
+  TO DO
+
+  Map each of the four sentiment analysis functions to what was going on with United
+  Switch from plyr function ddply() to equivalent dplyr functionality
+
 062717 - Tue
 
   Accomplished
@@ -12,7 +25,6 @@
   Switch from plyr function ddply() to equivalent dplyr functionality
   Clean up the overall code
   Create a narrative and incorporate into PPT
-
 
 062617 - Mon
 
