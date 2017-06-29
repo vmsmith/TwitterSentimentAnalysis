@@ -9,8 +9,7 @@ change_dash_to_space <- function(x) chartr("-", " ", x)
 remove_punctuation <- function(x) gsub("[[:punct:]]", "", x)
 remove_digits <- function(x) gsub("[[:digit:]]+", "", x)
 remove_control_characters <- function(x) gsub("[[:cntrl:]]", "", x)
-# Collapse multiple spaces to one space
-collapse_spaces <- function(x) gsub("\\s{2,}", " ", x)
+collapse_spaces <- function(x) gsub("\\s{2,}", " ", x) # Collapse multiple spaces to one space
 
 remove_pictwittercom <- function(x) gsub("pictwittercom\\w+ *"  , "", x, ignore.case = TRUE)
 
@@ -19,8 +18,6 @@ remove_pictwittercom <- function(x) gsub("pictwittercom\\w+ *"  , "", x, ignore.
 
 # Words beginning with "#"
 # remove_hashtag <- function(x) gsub("#\\w+", "", x)
-
-
-remove_miscellaneous <- function(x) gsub("[^[:alpha:][:space:]]*", "", x)
+#remove_miscellaneous <- function(x) gsub("[^[:alpha:][:space:]]*", "", x)
 
 convert_to_lower <- function(x) tolower(x)
