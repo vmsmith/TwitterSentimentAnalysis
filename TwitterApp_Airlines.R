@@ -4,27 +4,23 @@
 
 rm(list = ls())
 
-#install.packages("twitteR") # should also install bit, bit64, rjson
-#install.packages("httr")
-#install.packages("devtools")
-#install.packages("tm")
-#install.packages("stringr")
-
-
 library(bit)
 library(bit64)
+library(data.table)
 library(devtools)
 library(dplyr)
 library(foreign)
 library(ggplot2)
 library(httr)
 library(lubridate)
+library(plyr)
 library(rjson)
 library(stringr)
 library(syuzhet)
 library(tm)
 library(twitteR)
 
+source("./cleaning_functions.R")
 
 # Connect with Twitter and test the connection ----------------------------
 
@@ -58,104 +54,126 @@ names(airlines_tweets)
 airlines_tweets[1, ]
 
 # Last tweet
-airlines_tweets[268337, ]
+tail(airlines_tweets, n = 1)
 
 # Text of 1st tweet
 airlines_tweets[1, 5]
 
 # Random 20 tweets
-airlines_tweets[1:20, 5]
+airlines_tweets[sample(1:1087679, 20), 5]
 
 
+# Isolate the time period of interest -------------------------------------
 
-# Process the text --------------------------------------------------------
+airlines_tweets <- select(airlines_tweets, c(1, 4, 5))
+names(airlines_tweets)
 
-# Isolate text
-tweets_text <- tweets_df[ , 1]
-tweets_text
+# Change TimeStamp to date
+airlines_tweets$TimeStamp <- as.Date(airlines_tweets$TimeStamp)
+
+# Extract Mar - May 2017 tweets
+airlines_tweets <- filter(airlines_tweets, TimeStamp >= "2017-03-15")
+airlines_tweets$TimeStamp[1]
+tail(airlines_tweets$TimeStamp, n = 1)
+
+airlines_tweets <- filter(airlines_tweets, TimeStamp <= "2017-05-31")
+airlines_tweets$TimeStamp[1]
+tail(airlines_tweets$TimeStamp, n = 1)
+# TODO: Figure out why the ending date is not working
+
+dim(airlines_tweets)
+
+# Execute text cleaning functions -----------------------------------------
+
+# Option 1 - Individual functions one at a time
+airlines_tweets[1:20, 3]
+
+airlines_tweets[ , 3] <- remove_emoticons(airlines_tweets[ , 3])
+airlines_tweets[1:20, 3]
+
+airlines_tweets[ , 3] <- remove_bad_encoding(airlines_tweets[ , 3])
+airlines_tweets[1:20, 3]
+
+airlines_tweets[ , 3] <- remove_URLs(airlines_tweets[ , 3])
+airlines_tweets[1:20, 3]
+
+airlines_tweets[ , 3] <- change_dash_to_space(airlines_tweets[ , 3])
+airlines_tweets[1:20, 3]
+
+airlines_tweets[ , 3] <- remove_punctuation(airlines_tweets[ , 3])
+airlines_tweets[1:20, 3]
+
+airlines_tweets[ , 3] <- remove_digits(airlines_tweets[ , 3])
+airlines_tweets[1:20, 3]
+
+airlines_tweets[ , 3] <- remove_control_characters(airlines_tweets[ , 3])
+airlines_tweets[1:20, 3]
+
+airlines_tweets[ , 3] <- collapse_spaces(airlines_tweets[ , 3])
+airlines_tweets[1:20, 3]
+
+airlines_tweets[ , 3] <- remove_pictwittercom(airlines_tweets[ , 3])
+airlines_tweets[1:20, 3]
+
+airlines_tweets[ , 3] <- tolower(airlines_tweets[ , 3])
+airlines_tweets[1:20, 3]
+
+# Option 2 - With the pipe operator
+airlines_tweets[ , 2] <- remove_emoticons(airlines_tweets[ , 2]) %>%
+  remove_bad_encoding() %>%
+  remove_URLs() %>%
+  change_dash_to_space() %>%
+  remove_punctuation() %>%
+  remove_digits() %>%
+  remove_control_characters() %>%
+  collapse_spaces() %>%
+  remove_pictwittercom() %>%
+  tolower()
+
+# TODO: Remove stop words
 
 # TODO: Remove duplicates
 
 # TODO: Account for NAs
 
 # TODO: Test retweet removal function
+
 # Remove retweet entities from the stored tweets (text)
 # bjp_txt = gsub(“(RT|via)((?:\\b\\W*@\\w+)+)”, “”, bjp_txt)
 
+# Run initial sentiment functions from Syuzhet package --------------------
 
-# Convert encoding of emoticons
-# See: https://stackoverflow.com/questions/9637278/r-tm-package-invalid-input-in-utf8towcs
-tweets_text <- iconv(tweets_text, to = "UTF-8-MAC", sub = "byte")
+scoreSentiment = function(tab)
+{
+  tab$syuzhet = get_sentiment(tab$Text, method = "syuzhet")
+  tab$bing = get_sentiment(tab$Text, method = "bing")
+  tab$afinn = get_sentiment(tab$Text, method = "afinn")
+  tab$nrc = get_sentiment(tab$Text, method = "nrc")
+  emotions = get_nrc_sentiment(tab$Text)
+  n = names(emotions)
+  for (nn in n) tab[, nn] = emotions[nn]
+  return(tab)
+}
 
-# Remove bad encoding
-tweets_text <- gsub("\\x[^**]", "", tweets_text)                # <- To Do
+# Get the sentiment scores for the tweets (about 5 1/2 minutes on the Mac Pro)
+tweets = scoreSentiment(airlines_tweets)
+names(tweets)
+tweets$TimeStamp <- as.Date(tweets$TimeStamp)
+tweets[1, ]
 
-# Remove URLs
-tweets_text <- gsub("http[^[:space:]]*", "", tweets_text)
+# Visualize the results ---------------------------------------------------
 
-# Remove punctuation
-tweets_text = gsub("[[:punct:]]", "", tweets_text)
+# get daily summaries of the results
+daily = ddply(tweets, ~ Airline + TimeStamp, summarize, ave_sentiment = mean(bing))
 
-# Remove control characters
-tweets_text = gsub("[[:cntrl:]]", "", tweets_text)
-
-# Remove digits
-tweets_text = gsub("[[:digit:]]+", "", tweets_text)
-
-# Remove other than English or space
-tweets_text <- gsub("[^[:alpha:][:space:]]*", "", tweets_text)
-
-
-# Convert to lower case
-tweets_text <- tolower(tweets_text)
-
-tweets_text
-
-word.list <- str_split(tweets_text, "\\s+")
-word.list
-words = unlist(word.list)
-# TODO: Compare list of words to vector of words
-words
-length(words)
-
-# Import and apply sentiments ---------------------------------------------
-
-# TODO: Look for more current sentiment files
-
-posText <- read.delim("./words-positive-2.txt", header = FALSE, stringsAsFactors = FALSE)
-typeof(posText)
-posText
-
-posText <- unlist(lapply(posText, function(x) { str_split(x, "\n") }))
-typeof(posText)
-length(posText)
-
-negText <- read.delim("./words-negative.txt", header = FALSE, stringsAsFactors = FALSE)
-typeof(negText)
-
-negText <- unlist(lapply(negText, function(x) { str_split(x, "\n") }))
-typeof(negText)
-length(negText)
-
-posText <- c(posText, 'upgrade')
-negText <- c(negText, 'wtf', 'wait', 'waiting','epicfail', 'mechanical')
-
-posMatches <- match(words, posText)
-posMatches <- !is.na(posMatches)
-posSentiments <- length(which(posMatches))
-
-negMatches <- match(words, negText)
-negMatches <- !is.na(negMatches)
-negSentiments <- length(which(negMatches))
-
-sentiment <- length(which(posMatches)) - length(which(negMatches))
-sentiment
+# plot the daily sentiment
+ggplot(daily, aes(x = TimeStamp, y = ave_sentiment, colour = Airline)) + geom_line() +
+  ggtitle("Airline Sentiment") + xlab("Date") + ylab("Sentiment") + scale_x_date(date_labels = '%d-%b-%y')
 
 
-# View the sentiments -----------------------------------------------------
 
-Sentiments <- c("Positive Sentiments" = posSentiments, "Negative Sentiments" = negSentiments)
-barplot(Sentiments, main = "Starbucks Tweets", ylab = "Sentiment Count")
+
+
 
 
 ################################################################################
