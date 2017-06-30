@@ -131,6 +131,9 @@ united_passenger_dragged[ , 2] <- remove_emoticons(united_passenger_dragged[ , 2
                                   collapse_spaces() %>%
                                   remove_pictwittercom() %>%
                                   tolower()
+
+# TODO: Remove stop words
+
 # TODO: Remove duplicates
 
 # TODO: Account for NAs
