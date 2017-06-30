@@ -1,3 +1,16 @@
+063017 - Fri
+
+  Accomplished
+  
+  Initial functionality for TwitterApp_Airlines.R comparing four airlines
+  
+  TO DO
+  
+  Create README.md and Journal.md files
+  Start DOM API 
+  Possible aspect analysis of the four airlines
+
+
 062817 - Wed
 
   Accomplished
