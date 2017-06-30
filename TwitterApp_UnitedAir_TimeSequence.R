@@ -100,7 +100,7 @@ united_passenger_dragged[ , 2] <- remove_URLs(united_passenger_dragged[ , 2])
 united_passenger_dragged[1:20, 2]
 
 united_passenger_dragged[ , 2] <- change_dash_to_space(united_passenger_dragged[ , 2])
-united_passenger_dragged[ , 2]
+united_passenger_dragged[1:20, 2]
 
 united_passenger_dragged[ , 2] <- remove_punctuation(united_passenger_dragged[ , 2])
 united_passenger_dragged[1:20, 2]
@@ -132,6 +132,8 @@ united_passenger_dragged[ , 2] <- remove_emoticons(united_passenger_dragged[ , 2
                                   remove_pictwittercom() %>%
                                   tolower()
 
+united_passenger_dragged[1:20, 2]
+
 # TODO: Remove stop words
 
 # TODO: Remove duplicates
@@ -160,7 +162,7 @@ scoreSentiment = function(tab)
 # Get the sentiment scores for the tweets (about 3 1/2 minutes on the Mac Pro)
 tweets = scoreSentiment(united_passenger_dragged)
 names(tweets)
- tweets[1, ]
+tweets[1, ]
 
 
 
