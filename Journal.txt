@@ -1,69 +1,84 @@
+080117 - Tue  
+
+  Accomplished
+  
+    Created file to run David Robinson's "Variance Explained" code to evaluate sentiment analysis
+    Downloaded Yelp data set
+    Ran code from website
+  
+  TO DO
+  
+    Figure out the code
+    Figure out how to show last two graphics on website
+    Use code to compare AFINN, NRC, and Bing (and possibly Syushet)
+    Develop matching PPT
+
 063017 - Fri
 
   Accomplished
   
-  Initial functionality for TwitterApp_Airlines.R comparing four airlines
+    Initial functionality for TwitterApp_Airlines.R comparing four airlines
   
   TO DO
   
-  Create README.md and Journal.md files
-  Start DOM API 
-  Possible aspect analysis of the four airlines
+    Create README.md and Journal.md files
+    Start DOM API 
+    Possible aspect analysis of the four airlines
 
 
 062817 - Wed
 
   Accomplished
   
-  Tested and refined text cleaning functions in separate file (regex_expressions.R)
-  Created separate source file for text cleaning functions (cleaning_functions.R)
-  Cleaned up code in TwitterApp_UnitedAir_TimeSequence.R
+    Tested and refined text cleaning functions in separate file (regex_expressions.R)
+    Created separate source file for text cleaning functions (cleaning_functions.R)
+    Cleaned up code in TwitterApp_UnitedAir_TimeSequence.R
   
   TO DO
 
-  Map each of the four sentiment analysis functions to what was going on with United
-  Switch from plyr function ddply() to equivalent dplyr functionality
-  Get rid of blank space at the end of certain lines
+    Map each of the four sentiment analysis functions to what was going on with United
+    Switch from plyr function ddply() to equivalent dplyr functionality
+    Get rid of blank space at the end of certain lines
 
 062717 - Tue
 
   Accomplished
   
-  Did a first run of the time series for United, and showed down and up spikes that match calendar events
-  Compared four sentiment analyses in a time series context
-  Determined 'round_weeks()' function was superfluous and deleted it
+    Did a first run of the time series for United, and showed down and up spikes that match calendar events
+    Compared four sentiment analyses in a time series context
+    Determined 'round_weeks()' function was superfluous and deleted it
   
   TO DO
   
-  Refine the various text cleaning functions
-  Switch from plyr function ddply() to equivalent dplyr functionality
-  Clean up the overall code
-  Create a narrative and incorporate into PPT
+    Refine the various text cleaning functions
+    Switch from plyr function ddply() to equivalent dplyr functionality
+    Clean up the overall code
+    Create a narrative and incorporate into PPT
 
 062617 - Mon
 
   Accomplished
   
-  Tweaked text cleaning functions
-  Incorporated Syuzhet sentiment functions per blog
-  Imported time series functions from blog
+    Tweaked text cleaning functions
+    Incorporated Syuzhet sentiment functions per blog
+    Imported time series functions from blog
   
   TO DO
   
-  Interpret the 'round_weeks()' function from the blog
-  Run the time series stuff
+    Interpret the 'round_weeks()' function from the blog
+    Run the time series stuff
 
 062517 - Sun
 
 	Accomplished
 
-	Created new file to process United tweets during timeframe of dragging incident.
-	Removed tm package stuff and created individual text cleaning functions.
-	Tried Syuzhet package sentiment functions.
+	  Created new file to process United tweets during timeframe of dragging incident.
+	  Removed tm package stuff and created individual text cleaning functions.
+	  Tried Syuzhet package sentiment functions.
 
 	TO DO
 
-	Figure out why the sentiment package results are all over the place and unintuitive.
-	Construct the time series analysis.
+	  Figure out why the sentiment package results are all over the place and unintuitive.
+	  Construct the time series analysis.
 
 
