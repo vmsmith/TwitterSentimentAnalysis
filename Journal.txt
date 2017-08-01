@@ -5,6 +5,7 @@
     Created file to run David Robinson's "Variance Explained" code to evaluate sentiment analysis
     Downloaded Yelp data set
     Ran code from website
+    Created a README file
   
   TO DO
   
